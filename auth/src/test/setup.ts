@@ -3,13 +3,18 @@ import mongoose from 'mongoose';
 import request from 'supertest';
 import { app } from '../app';
 
+// declare global {
+//     namespace NodeJS {
+//         interface Global {
+//             signin(): Promise<string[]>;
+//         }
+//     }
+// }
+
 declare global {
-    namespace NodeJS {
-        interface Global {
-            signin(): Promise<string[]>;
-        }
-    }
+    var signin: () => Promise<string[]>;
 }
+
 
 let mongo: any;
 
@@ -53,5 +58,13 @@ global.signin = async () => {
                      .expect(201);
 
     const cookie = response.get('Set-Cookie');
+    if(!cookie)
+    {
+        throw new Error("Failed to get cookie from response");
+    }
     return cookie;
 };
+
+// // Explicitly tell TypeScript that global is of the extended type
+// (global as NodeJS.Global).signin = global.signin;
+
