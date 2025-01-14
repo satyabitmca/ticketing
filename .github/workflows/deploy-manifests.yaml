@@ -1,0 +1,22 @@
+name: deploy-manifests
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+     - 'infra/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2      
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+         version: 'latest'
+         project_id: ${{ secrets.GCP_PROJECT_ID }}
+         service_account_key: ${{ secrets.GCP_SA_KEY }}
+      - run: gcloud auth activate-service-account --key-file=${{ secrets.GCP_SA_KEY }}
+      - run: gcloud container clusters get-credentials ticketing --zone us-central1
+      - run: kubectl apply -f infra/k8s && kubectl apply -f infra/k8s-prod

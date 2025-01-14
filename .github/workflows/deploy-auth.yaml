@@ -1,0 +1,28 @@
+name: deploy-auth
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+     - 'auth/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: cd auth && docker build -t satyabitmca/auth .
+      - run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin        
+        env:
+            DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+            DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - run: docker push satyabitmca/auth
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+         version: 'latest'
+         project_id: ${{ secrets.GCP_PROJECT_ID }}
+         service_account_key: ${{ secrets.GCP_SA_KEY }}
+      - run: gcloud auth activate-service-account --key-file=${{ secrets.GCP_SA_KEY }}
+      - run: gcloud container clusters get-credentials ticketing --zone us-central1
+      - run: kubectl apply -f auth-depl
