@@ -26,4 +26,4 @@ jobs:
          version: 'latest'
          project_id: ${{ secrets.GCP_PROJECT_ID }}         
       - run: gcloud container clusters get-credentials ticketing --zone us-central1
-      - run: kubectl apply -f infra/k8s/auth-depl
+      - run: kubectl rollout restart deployment auth-depl
