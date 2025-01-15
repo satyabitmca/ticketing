@@ -24,6 +24,7 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v2
         with:
          version: 'latest'
-         project_id: ${{ secrets.GCP_PROJECT_ID }}         
+         project_id: ${{ secrets.GCP_PROJECT_ID }}
+      - run: gcloud components install gke-gcloud-auth-plugin         
       - run: gcloud container clusters get-credentials ticketing --zone us-central1
       - run: kubectl rollout restart deployment auth-depl
