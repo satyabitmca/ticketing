@@ -20,5 +20,5 @@ jobs:
          version: 'latest'
          project_id: ${{ secrets.GCP_PROJECT_ID }}
       - run: gcloud components install gke-gcloud-auth-plugin 
-      - run: gcloud container clusters get-credentials ticketing --zone us-central1
+      - run: gcloud container clusters get-credentials ticketing --zone us-central1-a
       - run: kubectl apply -f infra/k8s && kubectl apply -f infra/k8s-prod
